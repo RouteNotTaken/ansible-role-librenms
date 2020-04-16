@@ -1,0 +1,9 @@
+---
+- name: Configure unbuntu server as LibreNMS poller
+  hosts: all
+  gather_facts: no
+  become: yes
+  become_method: sudo
+
+  roles:
+    - librenms

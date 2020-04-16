@@ -1,0 +1,93 @@
+---
+- name: Install repositories
+  apt:
+    name: software-properties-common
+    state: present
+
+- name: APT Update
+  apt:
+    update_cache: yes
+
+- name: Install LibreNMS rquired packages
+  apt:
+    pkg: "{{ librenms_required_packages }}"
+    state: present
+
+- name: Create LibreNMS user
+  user:
+    name: librenms
+    create_home: no
+    shell: /sbin/nologin
+    system: true
+    state: present
+
+- name: Create LibreNMS group
+  group:
+    name: librenms
+    system: true
+    state: present
+
+- name: Add LibreNMS group to web servers
+  user:
+    name: librenms
+    groups: 
+      - librenms
+      - www-data
+    append: true
+
+- name: Download LibreNMS
+  git:
+    repo: https://github.com/librenms/librenms.git
+    dest: /opt/librenms
+
+- name: Set permissions
+  command: "{{ item }}"
+  with_items:
+    - chown -R librenms:librenms /opt/librenms
+    - chmod 770 /opt/librenms
+    - setfacl -d -m g::rwx /opt/librenms/rrd /opt/librenms/logs /opt/librenms/bootstrap/cache/ /opt/librenms/storage/
+    - setfacl -R -m g::rwx /opt/librenms/rrd /opt/librenms/logs /opt/librenms/bootstrap/cache/ /opt/librenms/storage/
+
+- name: Install PHP dependencies
+  command: 
+  args:
+    cmd: ./scripts/composer_wrapper.php install --no-dev 
+    chdir: /opt/librenms
+  become: yes
+  become_user: librenms
+
+- name: SNMPD Configuraton
+  template:
+    src: snmpd_conf.j2
+    dest: /etc/snmp/snmpd.conf
+
+- name: Download Distro SNMP files
+  get_url:
+    url: https://raw.githubusercontent.com/librenms/librenms-agent/master/snmp/distro
+    dest: /usr/bin/distro 
+    mode: '755'
+
+- name: Restart SNMPD service
+  systemd:
+    state: restarted
+    name: snmpd
+
+- name: Copy Cron configs
+  copy:
+    src: /opt/librenms/librenms.nonroot.cron
+    dest: /etc/cron.d/librenms
+    remote_src: yes
+
+- name: Copy logrotate configs
+  copy:
+    src: /opt/librenms/misc/librenms.logrotate 
+    dest: /etc/logrotate.d/librenms
+    remote_src: yes
+
+- name: Set permissions (Round 2)
+  command: "{{ item }}"
+  with_items:
+    - chown -R librenms:librenms /opt/librenms
+    - setfacl -d -m g::rwx /opt/librenms/rrd /opt/librenms/logs /opt/librenms/bootstrap/cache/ /opt/librenms/storage/
+    - setfacl -R -m g::rwx /opt/librenms/rrd /opt/librenms/logs /opt/librenms/bootstrap/cache/ /opt/librenms/storage/
+...
