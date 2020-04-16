@@ -56,6 +56,20 @@
   become: yes
   become_user: librenms
 
+- name: Configure PHP timezone
+  lineinfile:
+    path: "{{ item }}"
+    regexp: ^;date.timezone =
+    line: date.timezone = 'America/Los_Angeles'
+  with_items:
+    - /etc/php/7.2/fpm/php.ini
+    - /etc/php/7.2/cli/php.ini
+
+- name: restart PHP-FPM
+  systemd:
+      state: restarted
+      name: php7.2-fpm
+
 - name: SNMPD Configuraton
   template:
     src: snmpd_conf.j2
