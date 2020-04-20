@@ -1,6 +1,5 @@
-snmp_location: 123 fake street
-snmp_contact: Support
-snmp_v2_community: readonly
+db_user: librenms
+db_port: 3306
 librenms_required_packages:
   - curl 
   - composer 
@@ -10,6 +9,7 @@ librenms_required_packages:
   - imagemagick 
   - mariadb-client 
   - mariadb-server 
+  - memcached
   - mtr-tiny 
   - nginx-full 
   - nmap 
@@ -29,3 +29,6 @@ librenms_required_packages:
   - snmp 
   - snmpd 
   - whois
+snmp_contact: Support
+snmp_location: 123 fake street
+snmp_v2_community: readonly
