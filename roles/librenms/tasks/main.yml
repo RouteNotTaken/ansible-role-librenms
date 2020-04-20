@@ -86,6 +86,11 @@
     state: restarted
     name: snmpd
 
+- name: LibreNMS config.php Configuraton
+  template:
+    src: librenms_conf.j2
+    dest: /opt/librenms/config.ph
+
 - name: Copy Cron configs
   copy:
     src: /opt/librenms/librenms.nonroot.cron
