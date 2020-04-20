@@ -91,6 +91,15 @@
     src: librenms_conf.j2
     dest: /opt/librenms/config.ph
 
+- name: LibreNMS .env file Configruation
+  blockinfile:
+    path: /opt/librenms/.env
+    block: |
+      DB_HOST={{ db_host }}
+      DB_DATABASE=librenms
+      DB_USERNAME={{ db_user }}
+      DB_PASSWORD={{ db_pass }}
+
 - name: Copy Cron configs
   copy:
     src: /opt/librenms/librenms.nonroot.cron
