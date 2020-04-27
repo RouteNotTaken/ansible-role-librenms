@@ -9,10 +9,10 @@ Ubuntu Server 18.04.4 LTS or greater.
 ## Role Variables
 #### Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-    db_host
+    db_host (required)
     db_user
     db_port
-    db_pass
+    db_pass (required)
 Values for the external database server hosting the librenms table. User and port defined in defaults, host and pass required.
 
     memcached_host
