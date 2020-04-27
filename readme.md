@@ -40,6 +40,7 @@ List of all packages required to be installed via APT for libreNMS. (see https:/
       become_method: sudo
 
       vars:
+        db_host: 192.1.1.10
         db_pass: password
         memcached_host: 192.1.1.10
         rrdcached_host: 192.1.1.10
